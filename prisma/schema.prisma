@@ -19,14 +19,95 @@ enum Role {
   CUSTOMER
 }
 
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
 model User {
   id String @id @default(uuid())
   name String
   email String @unique
   password String
-  role Role
+  role Role @default(CUSTOMER)
   isActive Boolean @default(true)
+  address String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  medicines Medicine[] 
+  orders    Order[]
+  reviews   Review[]
+}
+
+model Category {
+  id          String     @id @default(uuid())
+  name        String
+  description String?
+  createdAt   DateTime   @default(now())
+
+  medicines   Medicine[]
+}
+
+model Medicine {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  price       Decimal
+  stock       Int
+  isAvailable Boolean  @default(true)
+  imageUrl    String?
+
+  categoryId  String
+  sellerId    String
+
+  category    Category @relation(fields: [categoryId], references: [id])
+  seller      User     @relation(fields: [sellerId], references: [id])
+
+  reviews     Review[]
+  orderItems  OrderItem[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Order {
+  id           String       @id @default(uuid())
+  customerId   String
+  status       OrderStatus  @default(PENDING)
+  totalAmount  Decimal
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  customer     User        @relation(fields: [customerId], references: [id])
+  items        OrderItem[]
+}
+
+model OrderItem {
+  id         String   @id @default(uuid())
+  orderId    String
+  medicineId String
+  quantity   Int
+  price      Decimal
+
+  order      Order    @relation(fields: [orderId], references: [id])
+  medicine   Medicine @relation(fields: [medicineId], references: [id])
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  rating     Int
+  comment    String?
+  medicineId String
+  userId     String
+  createdAt  DateTime @default(now())
+
+  medicine   Medicine @relation(fields: [medicineId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@unique([medicineId, userId]) // one review per user per medicine
 }
