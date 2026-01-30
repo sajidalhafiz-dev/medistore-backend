@@ -11,7 +11,7 @@ const createOrder: RequestHandler = async (req, res) => {
             data: data,
         });
     } catch (e) {
-        console.log(e)
+        console.error(e)
         res.status(400).json({
             error: "message",
             details: e
@@ -27,7 +27,7 @@ const getOrders: RequestHandler = async (req, res) => {
             data: orders,
         });
     } catch (e) {
-        console.log(e)
+        console.error(e)
         res.status(400).json({
             error: "message",
             details: e
@@ -40,7 +40,7 @@ const updateOrder: RequestHandler = async (req, res) => {
         const data = await orderService.updateOrder(req.params.id as string, req.body)
         res.status(200).json({ message: "Order updated", data });
     } catch (e) {
-        console.log(e)
+        console.error(e)
         res.status(400).json({
             error: "message",
             details: e
@@ -54,7 +54,7 @@ const deleteOrder: RequestHandler = async (req, res) => {
         res.status(200).json({ message: "Order deleted", data });
 
     } catch (e) {
-        console.log(e)
+        console.error(e)
         res.status(400).json({
             error: "message",
             details: e
