@@ -13,11 +13,11 @@ datasource db {
   provider = "postgresql"
 }
 
-enum Role {
-  ADMIN
-  SELLER
-  CUSTOMER
-}
+// enum Role {
+//   ADMIN
+//   SELLER
+//   CUSTOMER
+// }
 
 enum OrderStatus {
   PENDING
@@ -27,75 +27,142 @@ enum OrderStatus {
   CANCELLED
 }
 
-model User {
-  id String @id @default(uuid())
-  name String
-  email String @unique
-  password String
-  role Role @default(CUSTOMER)
-  isActive Boolean @default(true)
-  address String?
+// model User {
+//   id String @id @default(uuid())
+//   name String
+//   email String @unique
+//   password String
+//   role Role @default(CUSTOMER)
+//   isActive Boolean @default(true)
+//   address String?
 
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+
+//   medicines Medicine[] 
+//   orders    Order[]
+//   reviews   Review[]
+// }
+
+model User {
+  id            String     @id
+  name          String
+  email         String
+  emailVerified Boolean    @default(false)
+  image         String?
+  address       String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  medicines     Medicine[]
+  orders        Order[]
+  reviews       Review[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  medicines Medicine[] 
-  orders    Order[]
-  reviews   Review[]
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }
 
 model Category {
-  id          String     @id @default(uuid())
+  id          String   @id @default(uuid())
   name        String
   description String?
-  createdAt   DateTime   @default(now())
+  createdAt   DateTime @default(now())
 
-  medicines   Medicine[]
+  medicines Medicine[]
 }
 
 model Medicine {
-  id          String   @id @default(uuid())
+  id          String  @id @default(uuid())
   name        String
   description String?
   price       Decimal
   stock       Int
-  isAvailable Boolean  @default(true)
+  isAvailable Boolean @default(true)
   imageUrl    String?
 
-  categoryId  String
-  sellerId    String
+  categoryId String
+  sellerId   String
 
-  category    Category @relation(fields: [categoryId], references: [id])
-  seller      User     @relation(fields: [sellerId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+  seller   User     @relation(fields: [sellerId], references: [id])
 
-  reviews     Review[]
-  orderItems  OrderItem[]
+  reviews    Review[]
+  orderItems OrderItem[]
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Order {
-  id           String       @id @default(uuid())
-  customerId   String
-  status       OrderStatus  @default(PENDING)
-  totalAmount  Decimal
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  id          String      @id @default(uuid())
+  customerId  String
+  status      OrderStatus @default(PENDING)
+  totalAmount Decimal
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
-  customer     User        @relation(fields: [customerId], references: [id])
-  items        OrderItem[]
+  customer User        @relation(fields: [customerId], references: [id])
+  items    OrderItem[]
 }
 
 model OrderItem {
-  id         String   @id @default(uuid())
+  id         String  @id @default(uuid())
   orderId    String
   medicineId String
   quantity   Int
   price      Decimal
 
-  order      Order    @relation(fields: [orderId], references: [id])
-  medicine   Medicine @relation(fields: [medicineId], references: [id])
+  order    Order    @relation(fields: [orderId], references: [id])
+  medicine Medicine @relation(fields: [medicineId], references: [id])
 }
 
 model Review {
@@ -106,8 +173,9 @@ model Review {
   userId     String
   createdAt  DateTime @default(now())
 
-  medicine   Medicine @relation(fields: [medicineId], references: [id])
-  user       User     @relation(fields: [userId], references: [id])
+  medicine Medicine @relation(fields: [medicineId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
 
-  @@unique([medicineId, userId]) // one review per user per medicine
+  // one review per user per medicine
+  @@unique([medicineId, userId])
 }
