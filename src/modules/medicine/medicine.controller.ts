@@ -1,23 +1,67 @@
 import { RequestHandler } from "express";
-import { prisma } from "../../lib/prisma";
+import { medicineService } from "./medicine.service";
+
 
 const createMedicine: RequestHandler = async (req, res) => {
+    try {
+        const data = await medicineService.createMedicine(req.body);
+        res.json({ message: "Medicine created", data });
+
+    } catch (e) {
+        console.log(e)
+        res.status(400).json({
+            error: "message",
+            details: e
+        })
+    }
+};
+
+const getMedicine: RequestHandler = async (req, res) => {
+    try {
+        const data = await medicineService.getMedicines();
+        res.status(200).json({ message: "All medicines", data });
+
+    } catch (e) {
+        console.log(e)
+        res.status(400).json({
+            error: "message",
+            details: e
+        })
+    }
+};
+
+const updateMedicine: RequestHandler = async (req, res) => {
 
     try {
-        const payload = req.body;
-        const medicine = await prisma.medicine.create({
-            data: payload
-        })
+        const data = await medicineService.updateMedicine(req.params.id as string, req.body);
+        res.status(200).json({ message: "Medicine updated", data });
 
-        res.send({
-            mesaage: "Medicine Added Successfully.",
-            data: medicine
+    } catch (e) {
+        console.log(e)
+        res.status(400).json({
+            error: "message",
+            details: e
         })
-    } catch (error) {
-        console.error(error)
     }
-}
+};
+
+const deleteMedicine: RequestHandler = async (req, res) => {
+    try {
+        const data = await medicineService.deleteMedicine(req.params.id as string);
+        res.status(200).json({ message: "Medicine deleted", data });
+
+    } catch (e) {
+        console.log(e)
+        res.status(400).json({
+            error: "message",
+            details: e
+        })
+    }
+};
 
 export const medicineController = {
     createMedicine,
+    getMedicine,
+    updateMedicine,
+    deleteMedicine
 }

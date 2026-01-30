@@ -1,55 +1,66 @@
 import { RequestHandler } from "express";
-import { prisma } from "../../lib/prisma";
+import { categoryService } from "./category.service";
+
 
 const createCategory: RequestHandler = async (req, res) => {
-
     try {
-        const payload = req.body;
-        const category = await prisma.category.create({
-            data: payload
-        })
+        const data = await categoryService.createCategory(req.body);
+        res.status(201).json({ message: "Category created", data });
 
-        res.send({
-            message: "Category created successfully.",
-            data: category
+    } catch (e) {
+        console.log(e)
+        res.status(400).json({
+            error: "message",
+            details: e
         })
-    } catch (error) {
-        console.error(error)
     }
-}
-
+};
 
 const getCategory: RequestHandler = async (req, res) => {
     try {
-        const data = await prisma.category.findMany();
-        res.send({
-            message: "All Categories.",
-            data
+        const data = await categoryService.getCategories();
+        res.status(200).json({ message: "All categories", data });
+
+    } catch (e) {
+        console.log(e)
+        res.status(400).json({
+            error: "message",
+            details: e
         })
-    } catch (error) {
-        console.error(error)
     }
-}
+};
+
+const updateCategory: RequestHandler = async (req, res) => {
+    try {
+        const data = await categoryService.updateCategory(req.params.id as string, req.body);
+        res.json({ message: "Category updated", data });
+
+    } catch (e) {
+        console.log(e)
+        res.status(400).json({
+            error: "message",
+            details: e
+        })
+    }
+};
 
 const deleteCategory: RequestHandler = async (req, res) => {
     try {
-        const id: any = req.params.id
-        const data = await prisma.category.delete({
-            where: {
-                id: id,
-            }
+        const data = await categoryService.deleteCategory(req.params.id as string);
+        res.status(200).json({ message: "Category deleted", data });
+
+    } catch (e) {
+        console.log(e)
+        res.status(400).json({
+            error: "message",
+            details: e
         })
-        res.send({
-            message: `CategoryID: ${id} is deleted.`,
-            data
-        })
-    } catch (error) {
-        console.error(error)
     }
-}
+};
 
 export const categoryController = {
     createCategory,
     getCategory,
-    deleteCategory
+    updateCategory,
+    deleteCategory,
 }

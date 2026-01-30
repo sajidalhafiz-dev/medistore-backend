@@ -65,8 +65,8 @@ model Medicine {
   categoryId  String
   sellerId    String
 
-  category    Category? @relation(fields: [categoryId], references: [id])
-  seller      User?     @relation(fields: [sellerId], references: [id])
+  category    Category @relation(fields: [categoryId], references: [id])
+  seller      User     @relation(fields: [sellerId], references: [id])
 
   reviews     Review[]
   orderItems  OrderItem[]
