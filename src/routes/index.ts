@@ -12,6 +12,8 @@ routes.use("/category", categoryRouter)
 routes.use("/medicine", medicineRouter)
 routes.use("/order", orderRouter)
 routes.use("/review", reviewRouter)
+routes.use("/orderItem", reviewRouter)
+
 
 
 export default routes;
