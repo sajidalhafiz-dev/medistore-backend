@@ -23,7 +23,7 @@ const auth = (resource: ResourceType , action: string) => {
 
             if(!hasPermission || !hasPermission.success) res.status(403).send({message: `Forbidden: You are not allowed to ${action} ${resource}`})
 
-            console.log(session, "permission", hasPermission)
+            // console.log(session, "permission", hasPermission)
             next();
         } catch (e) {
             console.error(e)

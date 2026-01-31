@@ -5,8 +5,8 @@ import auth from "../../middlewares/auth";
 const categoryRouter = Router();
 
 categoryRouter.post("/", auth("category", "create"), categoryController.createCategory)
-categoryRouter.get("/", categoryController.getCategory)
-categoryRouter.patch("/:id", categoryController.updateCategory)
-categoryRouter.delete("/:id", categoryController.deleteCategory)
+categoryRouter.get("/", auth("category", "read"), categoryController.getCategory)
+categoryRouter.patch("/:id", auth("category", "update"), categoryController.updateCategory)
+categoryRouter.delete("/:id", auth("category", "delete"), categoryController.deleteCategory)
 
 export default categoryRouter;
