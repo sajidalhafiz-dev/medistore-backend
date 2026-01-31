@@ -13,11 +13,11 @@ datasource db {
   provider = "postgresql"
 }
 
-// enum Role {
-//   ADMIN
-//   SELLER
-//   CUSTOMER
-// }
+enum Role {
+  admin
+  seller
+  customer
+}
 
 enum OrderStatus {
   PENDING
@@ -50,7 +50,6 @@ model User {
   email         String
   emailVerified Boolean    @default(false)
   image         String?
-  address       String?
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
   sessions      Session[]
@@ -58,6 +57,13 @@ model User {
   medicines     Medicine[]
   orders        Order[]
   reviews       Review[]
+
+  banned     Boolean?  @default(false)
+  banReason  String?
+  banExpires DateTime?
+
+  role    Role    @default(customer)
+  address String?
 
   @@unique([email])
   @@map("user")
@@ -73,6 +79,8 @@ model Session {
   userAgent String?
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String?
 
   @@unique([token])
   @@index([userId])
@@ -118,6 +126,7 @@ model Category {
   createdAt   DateTime @default(now())
 
   medicines Medicine[]
+  @@map("category")
 }
 
 model Medicine {
@@ -140,6 +149,8 @@ model Medicine {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("medicine")
 }
 
 model Order {
@@ -152,6 +163,8 @@ model Order {
 
   customer User        @relation(fields: [customerId], references: [id])
   items    OrderItem[]
+
+  @@map("order")
 }
 
 model OrderItem {
@@ -163,6 +176,8 @@ model OrderItem {
 
   order    Order    @relation(fields: [orderId], references: [id])
   medicine Medicine @relation(fields: [medicineId], references: [id])
+
+  @@map("orderItem")
 }
 
 model Review {
@@ -178,4 +193,5 @@ model Review {
 
   // one review per user per medicine
   @@unique([medicineId, userId])
+  @@map("review")
 }
