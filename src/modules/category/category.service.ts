@@ -1,5 +1,6 @@
 import { prisma } from "../../lib/prisma";
 
+
 const createCategory = (data: any) => {
   return prisma.category.create({ data });
 };

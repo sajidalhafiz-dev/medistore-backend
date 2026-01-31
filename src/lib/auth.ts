@@ -2,7 +2,6 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
 import { admin, createAccessControl } from "better-auth/plugins";
-import { defaultRoles } from "better-auth/plugins/admin/access";
 
 
 
@@ -47,10 +46,10 @@ export const auth = betterAuth({
   user: {
     additionalFields: {
         role: {
-            type: ["admin", "customer", "seller"],
-            required: true,
+            type: ["customer", "seller"],
+            required: false,
             defaultValue: "customer",
-            input: false
+            input: true
         },
         address: {
             type: "string",
@@ -61,13 +60,14 @@ export const auth = betterAuth({
 
   plugins: [
     admin({
-        // adminRoles: ["admin", "customer", "seller"],
-        defaultRoles: "regular",
+        adminRoles: ["admin"],
+        publicRoles: ["customer", "seller"],
+        defaultRole: "customer",
         roles: {
             admin: adminRoles,
             customer: customerRoles,
             seller: sellerRoles
-        }
+        },
     })
   ]
 });
