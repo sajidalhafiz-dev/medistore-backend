@@ -18,16 +18,18 @@ app.all("/api/auth/*splat", toNodeHandler(auth));
 
 app.use(express.json())
 
-async function createAdmin() {
-  auth.api.createUser({
-    body: {
-      name: "MediStore Admin",
-      email: "admin@medistore.com",
-      password: "admin_1234",
-      role: "admin"
-    }
-  })
-}
+
+
+// async function createAdmin() {
+//   auth.api.createUser({
+//     body: {
+//       name: "MediStore Admin",
+//       email: "admin@medistore.com",
+//       password: "admin_1234",
+//       role: "admin"
+//     }
+//   })
+// }
 // createAdmin();
 
 app.use("/api", routes)

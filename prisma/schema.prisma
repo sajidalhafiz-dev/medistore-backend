@@ -12,22 +12,7 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
-// model User {
-//   id String @id @default(uuid())
-//   name String
-//   email String @unique
-//   password String
-//   role Role @default(CUSTOMER)
-//   isActive Boolean @default(true)
-//   address String?
 
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-
-//   medicines Medicine[] 
-//   orders    Order[]
-//   reviews   Review[]
-// }
 
 enum OrderStatus {
   PENDING
@@ -186,13 +171,12 @@ model Review {
   rating     Int
   comment    String?
   medicineId String
-  userId     String
+  customerId     String
   createdAt  DateTime @default(now())
 
   medicine Medicine @relation(fields: [medicineId], references: [id])
-  user     User     @relation(fields: [userId], references: [id])
+  user     User     @relation(fields: [customerId], references: [id])
 
-  // one review per user per medicine
-  @@unique([medicineId, userId])
+  @@unique([medicineId, customerId])
   @@map("review")
 }

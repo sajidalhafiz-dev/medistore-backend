@@ -7,7 +7,7 @@ import reviewRouter from "../modules/review/review.route";
 
 const routes = Router()
 
-routes.use("/user", userRouter)
+// routes.use("/user", userRouter)
 routes.use("/category", categoryRouter)
 routes.use("/medicine", medicineRouter)
 routes.use("/order", orderRouter)
